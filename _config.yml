@@ -24,7 +24,7 @@ github_username: 'mhirano'
 markdown: kramdown
 
 ### Phantom settings
-footer_text: '© 2026 Your Name'
+footer_text: '© 2026 Masahiro Hirano'
 admin_name: 'Masahiro Hirano'
 google_analytics: "UA-9999999-99" # Update with your own tracking ID
 enable_contact: false
