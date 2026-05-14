@@ -9,19 +9,22 @@
         <div class="hero-content wow animated fadeIn">
 
           <div style="padding: 20px 0px 0px 0px;">
-            <h2 class="text-center">Project Title</h2>
+            <h2 class="text-center">Ground-View Event Camera-Based Velocity Estimation Enabled by Spiking Neural Networks for Ground Robots</h2>
           </div>
           <div style="padding: 10px 0px 0px 0px;">
             <div style="text-align:center;font-size:14pt;">
               <div style="padding: 5px 0px 5px 0px">
-                <a href="http://link-to-author-1-website/">Author 1<sup>&#8224</sup></a>,
-                <a href="http://link-to-author-2-website/">Author 2<sup>&#8224</sup></a>
+                Junzhe Su<sup>&#8224</sup>,
+                <a href="https://mhirano.github.io/">Masahiro Hirano<sup>&#8224</sup></a>,
+                <a href="http://www.hfr.iis.u-tokyo.ac.jp/members/yamakawa/index-e.html">Yuji Yamakawa<sup>&#8224</sup></a>
               </div>
               <div style="padding: 5px 0px 5px 0px">
-                <span><sup>&#8224</sup> Your affiliation</span>
+                <span><sup>&#8224</sup>The University of Tokyo</span>
               </div>
               <div style="padding: 5px 0px 5px 0px">
-                <div class="venue text-center"><b>CONFERENCE YEAR</b></div>
+                <div class="venue text-center">
+                  <b><a href="https://ieeexplore.ieee.org/document/11491868">IEEE Access, 2026</a></b><br>
+                </div>
               </div>
             </div>
           </div>
@@ -29,56 +32,307 @@
           <div class="hero-buttons">
 
             {% if site.twitter_username != '' %}
-              <a href="https://link-to-arxiv/"><button class="btn btn-default btn-lg"><i class="fa fa-paperclip fa-lg"></i>Paper</button></a>
-            {% endif %}
-            {% if site.github_username != '' %}
-              <a href="https://link-to-youtube/"><button class="btn btn-default btn-lg"><i class="fa fa-youtube-play fa-lg"></i>YouTube</button></a>
+              <a href="./res/paper.pdf"><button class="btn btn-default btn-lg"><i class="fa fa-file-pdf-o fa-lg"></i>Paper</button></a>
             {% endif %}
 
           </div>
 
           <br>
-          <div style="width:60%;margin-left:auto;margin-right:auto;">
-          <img class="img-responsive" src="./res/eyecatch.png" title="title">
+          <div style="width:70%;margin-left:auto;margin-right:auto;">
+            <img class="img-responsive" src="./res/eyecatch.png" title="Real-vehicle outdoor setup with a ground-view event camera.">
+            <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+              Ground-view event camera mounted on a real vehicle for outdoor velocity estimation.
+            </p>
           </div>
           <br>
 
           <div class="section">
             <h3>Abstract</h3>
             <hr>
-            <p>Abstract</p>
+            <p>
+              Accurate velocity estimation plays a key role in ensuring precise motion control and safe navigation of ground robots. Ground-view event cameras provide a reliable sensing modality for this task: they exploit the static and stable nature of the ground, together with the sensor's high temporal resolution, to extract motion cues robustly even under challenging conditions such as scene dynamics, low light, or high dynamic range.
+            </p>
+            <p>
+              This paper proposes a novel velocity estimation method for ground robots using a ground-view event camera, whose application in a ground-looking configuration has received limited attention. We leverage a <b>spiking neural network (SNN)</b> to process event-based visual information directly, exploiting its intrinsic temporal dynamics to infer motion from ground texture event streams and eliminating the need for long-term event accumulation. To address the challenge of costly hyperparameter tuning associated with the conventional loss function, we propose a novel <b>geometric loss function</b> that automatically balances translation and rotation by using the differences between event coordinates warped by the predicted and the ground-truth motion.
+            </p>
+            <p>
+              Experiments on both synthetic and real-world data demonstrate that the proposed method not only handles diverse ground textures and variations in the camera's pose relative to the ground, but also generalizes well to real-world scenarios even when the network is trained exclusively on synthetic data.
+            </p>
           </div>
           <br>
+
           <div class="section">
-            <h3>Results</h3>
+            <h3>Method</h3>
             <hr />
-            <p>Results.</p>
-            <div class="row align-items-center">
-              <div class="col justify-content-center text-center">
-                <video width="60%" playsinline="" autoplay="" loop="" preload="" muted="">
-                  <source src="./res/sample-video.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-              </div>
+            <p>
+              We mount an event camera in a <b>ground-looking</b> configuration on a mobile robot and directly predict its 3-DoF planar motion <i>(x<sub>g</sub>, y<sub>g</sub>, &phi;<sub>g</sub>)</i> from short event streams. The geometry is illustrated below: <b>C</b><sub>cam</sub> is the event camera pose, <b>C</b><sub>g</sub> is its projection on the ground, <sup>g</sup><b>T</b><sub>cam</sub> is the extrinsic transform, and <sup>g,k</sup><b>T</b><sub>g,k+1</sub> is the planar motion from time <i>k</i> to <i>k+1</i> that we want to estimate.
+            </p>
+            <div style="width:70%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig1_geometry.png" title="Geometry of the problem.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 1 &mdash; Geometry of the problem. The vehicle icon is for illustration; the method applies to general ground robots.
+              </p>
+            </div>
+            <br>
+
+            <p>
+              <b>SNN architecture.</b>
+              Events within a fixed-length time window (we use <b>2 ms</b>) are encoded into an event voxel grid and fed into a spiking network composed of a convolutional spiking block, one max-pooling layer, one SEW residual block, two downsample SEW (DSEW) residual blocks, and three output branches that regress <i>x<sub>g</sub></i>, <i>y<sub>g</sub></i>, <i>&phi;<sub>g</sub></i> respectively. The recurrence of output spikes and the membrane potential of LIF/RLIF neurons together carry past sequential information, so the network can predict motion <b>without accumulating events over long periods</b>.
+            </p>
+            <div style="width:90%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig2_architecture.png" title="SNN architecture.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 2 &mdash; SNN architecture: ConvSpiking + SEW ResBlock + DSEW ResBlock &times; 2 + three Output Blocks for <i>x<sub>g</sub></i>, <i>y<sub>g</sub></i>, <i>&phi;<sub>g</sub></i>.
+              </p>
+            </div>
+            <br>
+
+            <p>
+              <b>Geometric loss.</b>
+              A naive RMSE loss requires a hand-tuned scaling factor <i>&gamma;</i> to balance translation and rotation, because their numerical scales differ by orders of magnitude. We instead select events within the time window, warp them with homography matrices computed from <b>predicted motion</b> and <b>ground-truth motion</b> respectively, and use the squared difference of their warped coordinates as the loss. Translation and rotation are jointly and automatically weighted by the geometry of the ground surface itself, removing the need for <i>&gamma;</i> tuning.
+            </p>
+            <div style="width:75%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig3_warped_events.png" title="Warped event images.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 3 &mdash; Warped event images. Left: ground-truth motion (sharp texture). Middle: untrained SNN (fails to warp). Right: SNN trained with the proposed <i>L</i><sub>geo</sub> (recovers a sharp ground image).
+              </p>
+            </div>
+            <br>
+
+            <p>
+              <b>Why &gamma; tuning is not enough.</b>
+              The figure below sweeps the scaling factor <i>&gamma;</i> in the weighted RMSE loss <i>L<sub>&gamma;</sub></i>: translation error decreases monotonically as <i>&gamma;</i> grows, while rotation error is minimized near <i>&gamma; = 1</i>. There is no single <i>&gamma;</i> that minimizes both. The proposed <i>L</i><sub>geo</sub> (dashed horizontal lines) achieves the lowest translation error and a rotation error close to the minimum &mdash; without any tuning.
+            </p>
+            <div style="width:65%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig4_scaling.png" title="Errors versus scaling factor.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 4 &mdash; Translation and rotation errors versus scaling factor <i>&gamma;</i>; dashed lines show <i>L</i><sub>geo</sub> (no scaling factor).
+              </p>
             </div>
           </div>
           <br>
+
           <div class="section">
-            <h3>Video</h3>
+            <h3>Results</h3>
             <hr />
-            <iframe class="youtube-video" src="https://www.youtube.com/embed/5kW0RtcJZC8" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <p>
+              We trained the SNN <b>only on synthetic data</b> generated with the ESIM event simulator on asphalt textures, then evaluated on (i) synthetic data covering three ground textures (asphalt / carpet / concrete), (ii) a real-world indoor handcart on carpet, and (iii) a real vehicle outdoors on asphalt.
+            </p>
+            <br>
+
+            <p>
+              <b>Synthetic test set.</b>
+              The table below reports RMSEs for linear velocities <i>v<sub>xg</sub>, v<sub>yg</sub></i> [m/s] and angular velocity <i>&omega;<sub>&phi;g</sub></i> [&deg;/s], compared against the PEME baseline and an ANN counterpart trained on the same data with the same overall architecture.
+            </p>
+            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+              <table class="table table-bordered text-center" style="margin-left:auto;margin-right:auto;">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Component</th>
+                    <th>Asphalt</th>
+                    <th>Carpet</th>
+                    <th>Concrete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="3"><b>Proposed</b></td>
+                    <td><i>v<sub>xg</sub></i> (m/s)</td>
+                    <td><b>0.3998</b></td>
+                    <td><b>0.3697</b></td>
+                    <td>0.4488</td>
+                  </tr>
+                  <tr>
+                    <td><i>v<sub>yg</sub></i> (m/s)</td>
+                    <td><b>0.5358</b></td>
+                    <td><b>0.5902</b></td>
+                    <td>0.6522</td>
+                  </tr>
+                  <tr>
+                    <td><i>&omega;<sub>&phi;g</sub></i> (&deg;/s)</td>
+                    <td><b>25.17</b></td>
+                    <td><b>30.81</b></td>
+                    <td><b>29.76</b></td>
+                  </tr>
+                  <tr>
+                    <td rowspan="3">ANN Counterpart</td>
+                    <td><i>v<sub>xg</sub></i></td>
+                    <td>0.6339</td>
+                    <td>0.5206</td>
+                    <td><b>0.3830</b></td>
+                  </tr>
+                  <tr>
+                    <td><i>v<sub>yg</sub></i></td>
+                    <td>0.6068</td>
+                    <td>0.7196</td>
+                    <td><b>0.3124</b></td>
+                  </tr>
+                  <tr>
+                    <td><i>&omega;<sub>&phi;g</sub></i></td>
+                    <td>43.50</td>
+                    <td>44.48</td>
+                    <td>36.85</td>
+                  </tr>
+                  <tr>
+                    <td rowspan="3">PEME [28]</td>
+                    <td><i>v<sub>xg</sub></i></td>
+                    <td>0.5548</td>
+                    <td>0.7256</td>
+                    <td>0.7163</td>
+                  </tr>
+                  <tr>
+                    <td><i>v<sub>yg</sub></i></td>
+                    <td>0.5251</td>
+                    <td>0.7685</td>
+                    <td><b>0.6945</b></td>
+                  </tr>
+                  <tr>
+                    <td><i>&omega;<sub>&phi;g</sub></i></td>
+                    <td>31.38</td>
+                    <td>41.26</td>
+                    <td>36.54</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+              Table 1 (excerpt) &mdash; RMSEs on synthetic data over three ground textures. Bold = lowest in column.
+            </p>
+            <br>
+
+            <p>
+              Across all three textures the proposed method keeps linear velocity RMSE below <b>0.66 m/s</b> and angular velocity RMSE below <b>31&deg;/s</b>, despite being trained only on asphalt. Note that PEME's results are computed <i>with</i> the ground-truth camera-to-ground pose, whereas the proposed method predicts velocity with absolute scale directly.
+            </p>
+            <div style="width:55%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig5_textures.png" title="Three different ground surface textures.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 5 &mdash; Three different ground surface textures in the test set: (a) asphalt, (b) carpet, (c) concrete.
+              </p>
+            </div>
+            <br>
+            <div style="width:55%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig6_velocity_synth.png" title="Estimated velocities on a synthetic sequence.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 6 &mdash; Estimated <i>v<sub>xg</sub>, v<sub>yg</sub>, &omega;<sub>&phi;g</sub></i> on a synthetic sequence. The proposed method tracks the ground truth more tightly than PEME and the ANN counterpart, especially for angular velocity.
+              </p>
+            </div>
+            <br>
+
+            <p>
+              <b>Real-world indoor: handcart on carpet.</b>
+              We pushed a handcart with a DAVIS346 event camera along random trajectories on carpet, capturing 108 sequences with OptiTrack ground truth. The network was <i>not</i> fine-tuned &mdash; it still operates on weights trained on synthetic asphalt only.
+            </p>
+            <div style="width:55%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig7_handcart.png" title="Indoor data collection setup.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 7 &mdash; Indoor data collection setup: handcart with a ground-view event camera over carpet.
+              </p>
+            </div>
+            <br>
+            <div style="width:60%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig8_velocity_indoor.png" title="Indoor real-world results.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 8 &mdash; Indoor real-world results. The proposed method achieves linear-velocity RMSE below <b>0.35 m/s</b> and angular-velocity RMSE below <b>18.5&deg;/s</b>, despite training only on synthetic asphalt.
+              </p>
+            </div>
+            <br>
+
+            <p>
+              <b>Real-world outdoor: vehicle on asphalt.</b>
+              We mounted the event camera together with a 500 Hz frame-based reference camera on a real vehicle and drove on an asphalt road. The frame-based stream provides reference motion via high-speed vision odometry (HSV-odometry); the event camera operates ground-view, downward-facing.
+            </p>
+            <div style="width:55%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig9_vehicle.png" title="Real-vehicle outdoor setup.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 9 &mdash; Real-vehicle outdoor setup: ground-view event camera + ground-view high-speed frame-based reference camera.
+              </p>
+            </div>
+            <br>
+            <div style="width:55%;margin-left:auto;margin-right:auto;">
+              <img class="img-responsive" src="./res/fig10_velocity_outdoor.png" title="Outdoor real-vehicle results.">
+              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                Fig. 10 &mdash; Outdoor real-vehicle results. The proposed SNN matches the reference velocity closely; PEME degrades noticeably on <i>v<sub>xg</sub></i>.
+              </p>
+            </div>
+            <br>
+
+            <p>
+              <b>Robustness to camera-to-ground pose error.</b>
+              A key advantage of our method is that, unlike PEME, it does <b>not</b> require knowledge of the camera-to-ground pose at inference time. To stress this, we injected a 5&deg; perturbation to pitch/roll and 0.05 m to height. The proposed method's RMSEs remain unchanged, while PEME's <i>v<sub>yg</sub></i> RMSE roughly doubles (0.39 &rarr; 0.77 m/s).
+            </p>
+            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+              <table class="table table-bordered text-center" style="margin-left:auto;margin-right:auto;">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Component</th>
+                    <th>without pose error</th>
+                    <th>with pose error</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="3"><b>Proposed</b></td>
+                    <td><i>v<sub>xg</sub></i></td>
+                    <td>0.2077</td>
+                    <td><b>0.2077</b></td>
+                  </tr>
+                  <tr>
+                    <td><i>v<sub>yg</sub></i></td>
+                    <td>0.4535</td>
+                    <td><b>0.4535</b></td>
+                  </tr>
+                  <tr>
+                    <td><i>&omega;<sub>&phi;g</sub></i></td>
+                    <td>44.71</td>
+                    <td><b>44.71</b></td>
+                  </tr>
+                  <tr>
+                    <td rowspan="3">PEME [28]</td>
+                    <td><i>v<sub>xg</sub></i></td>
+                    <td>0.2930</td>
+                    <td>0.3205</td>
+                  </tr>
+                  <tr>
+                    <td><i>v<sub>yg</sub></i></td>
+                    <td>0.3935</td>
+                    <td>0.7739</td>
+                  </tr>
+                  <tr>
+                    <td><i>&omega;<sub>&phi;g</sub></i></td>
+                    <td>13.83</td>
+                    <td>15.79</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+              Table 3 &mdash; Outdoor real-vehicle RMSEs with and without injected camera-to-ground pose error.
+            </p>
+            <br>
+
+            <p>
+              <b>Energy efficiency.</b>
+              Following standard 45 nm CMOS energy estimates (<i>E</i><sub>MAC</sub> = 5.1 &times; <i>E</i><sub>AC</sub>), a synaptic-operation analysis indicates that the proposed SNN is <b>8.18&times; more energy-efficient</b> than its ANN counterpart with the same overall architecture &mdash; while delivering equal or better accuracy on most evaluated components.
+            </p>
           </div>
           <br>
+
           <div class="section">
             <h3>Citation</h3>
             <hr />
             <div style="text-align:left;font-size:8px;overflow-x:auto;">
               <pre style="white-space:pre-wrap;word-break:break-word;"><code>
-@inproceedings{AuthorsYear,
-  title={Paper title},
-  author={Authors},
-  booktitle={Conference},
-  year={Year}
+@article{su2026groundview,
+  author    = {Su, Junzhe and Hirano, Masahiro and Yamakawa, Yuji},
+  title     = {Ground-View Event Camera-Based Velocity Estimation Enabled by
+               Spiking Neural Networks for Ground Robots},
+  journal   = {IEEE Access},
+  volume    = {14},
+  pages     = {64935--64948},
+  year      = {2026},
+  doi       = {10.1109/ACCESS.2026.3686315}
 }
                 </code></pre>
             </div>
