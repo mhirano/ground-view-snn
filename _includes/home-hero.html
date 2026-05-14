@@ -15,15 +15,15 @@
             <div style="text-align:center;font-size:14pt;">
               <div style="padding: 5px 0px 5px 0px">
                 Junzhe Su<sup>&#8224</sup>,
-                <a href="https://mhirano.github.io/">Masahiro Hirano<sup>&#8224</sup></a>,
-                <a href="http://www.hfr.iis.u-tokyo.ac.jp/members/yamakawa/index-e.html">Yuji Yamakawa<sup>&#8224</sup></a>
+                <a href="https://mhirano.github.io/">Masahiro Hirano</a><sup>&#8224</sup>,
+                <a href="http://www.hfr.iis.u-tokyo.ac.jp/members/yamakawa/index-e.html">Yuji Yamakawa</a><sup>&#8224</sup>
               </div>
               <div style="padding: 5px 0px 5px 0px">
                 <span><sup>&#8224</sup>The University of Tokyo</span>
               </div>
               <div style="padding: 5px 0px 5px 0px">
                 <div class="venue text-center">
-                  <b><a href="https://ieeexplore.ieee.org/document/11491868">IEEE Access, 2026</a></b><br>
+                  <b>IEEE Access, 2026</b><br>
                 </div>
               </div>
             </div>
@@ -32,7 +32,7 @@
           <div class="hero-buttons">
 
             {% if site.twitter_username != '' %}
-              <a href="./res/paper.pdf"><button class="btn btn-default btn-lg"><i class="fa fa-file-pdf-o fa-lg"></i>Paper</button></a>
+              <a href="https://ieeexplore.ieee.org/document/11491868"><button class="btn btn-default btn-lg"><i class="fa fa-paperclip fa-lg"></i>Paper</button></a>
             {% endif %}
 
           </div>
@@ -223,18 +223,19 @@
               <b>Real-world indoor: handcart on carpet.</b>
               We pushed a handcart with a DAVIS346 event camera along random trajectories on carpet, capturing 108 sequences with OptiTrack ground truth. The network was <i>not</i> fine-tuned &mdash; it still operates on weights trained on synthetic asphalt only.
             </p>
-            <div style="width:55%;margin-left:auto;margin-right:auto;">
-              <img class="img-responsive" src="./res/fig7_handcart.png" title="Indoor data collection setup.">
-              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
-                Fig. 7 &mdash; Indoor data collection setup: handcart with a ground-view event camera over carpet.
-              </p>
-            </div>
-            <br>
-            <div style="width:60%;margin-left:auto;margin-right:auto;">
-              <img class="img-responsive" src="./res/fig8_velocity_indoor.png" title="Indoor real-world results.">
-              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
-                Fig. 8 &mdash; Indoor real-world results. The proposed method achieves linear-velocity RMSE below <b>0.35 m/s</b> and angular-velocity RMSE below <b>18.5&deg;/s</b>, despite training only on synthetic asphalt.
-              </p>
+            <div class="row" style="margin-left:auto;margin-right:auto;">
+              <div class="col-sm-6">
+                <img class="img-responsive" src="./res/fig7_handcart.png" title="Indoor data collection setup." style="margin-left:auto;margin-right:auto;">
+                <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                  Fig. 7 &mdash; Indoor data collection setup: handcart with a ground-view event camera over carpet.
+                </p>
+              </div>
+              <div class="col-sm-6">
+                <img class="img-responsive" src="./res/fig8_velocity_indoor.png" title="Indoor real-world results." style="margin-left:auto;margin-right:auto;">
+                <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                  Fig. 8 &mdash; Indoor real-world results. The proposed method achieves linear-velocity RMSE below <b>0.35 m/s</b> and angular-velocity RMSE below <b>18.5&deg;/s</b>, despite training only on synthetic asphalt.
+                </p>
+              </div>
             </div>
             <br>
 
@@ -242,18 +243,19 @@
               <b>Real-world outdoor: vehicle on asphalt.</b>
               We mounted the event camera together with a 500 Hz frame-based reference camera on a real vehicle and drove on an asphalt road. The frame-based stream provides reference motion via high-speed vision odometry (HSV-odometry); the event camera operates ground-view, downward-facing.
             </p>
-            <div style="width:55%;margin-left:auto;margin-right:auto;">
-              <img class="img-responsive" src="./res/fig9_vehicle.png" title="Real-vehicle outdoor setup.">
-              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
-                Fig. 9 &mdash; Real-vehicle outdoor setup: ground-view event camera + ground-view high-speed frame-based reference camera.
-              </p>
-            </div>
-            <br>
-            <div style="width:55%;margin-left:auto;margin-right:auto;">
-              <img class="img-responsive" src="./res/fig10_velocity_outdoor.png" title="Outdoor real-vehicle results.">
-              <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
-                Fig. 10 &mdash; Outdoor real-vehicle results. The proposed SNN matches the reference velocity closely; PEME degrades noticeably on <i>v<sub>xg</sub></i>.
-              </p>
+            <div class="row" style="margin-left:auto;margin-right:auto;">
+              <div class="col-sm-6">
+                <img class="img-responsive" src="./res/fig9_vehicle.png" title="Real-vehicle outdoor setup." style="margin-left:auto;margin-right:auto;">
+                <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                  Fig. 9 &mdash; Real-vehicle outdoor setup: ground-view event camera + ground-view high-speed frame-based reference camera.
+                </p>
+              </div>
+              <div class="col-sm-6">
+                <img class="img-responsive" src="./res/fig10_velocity_outdoor.png" title="Outdoor real-vehicle results." style="margin-left:auto;margin-right:auto;">
+                <p style="text-align:center;font-size:0.9em;color:#777;margin-top:6px;">
+                  Fig. 10 &mdash; Outdoor real-vehicle results. The proposed SNN matches the reference velocity closely; PEME degrades noticeably on <i>v<sub>xg</sub></i>.
+                </p>
+              </div>
             </div>
             <br>
 

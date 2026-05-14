@@ -8,3 +8,4 @@ vendor/
 res/material/*
 Gemfile.lock
 .devcontainer/
+res/pdf/*
